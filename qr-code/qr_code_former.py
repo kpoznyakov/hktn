@@ -7,9 +7,8 @@ ID = ID-пользователя/utime/[0/1]-одноразовый/многор
 отправлять .png обратно на сайт
 """
 
-
-from time import time
 from random import randint
+from time import time
 
 import psycopg2
 import qrcode
@@ -50,5 +49,4 @@ qr.make(fit=True)
 
 img = qr.make_image()
 
-name = str(randint(10000, 99999))
-img.save(name + '.png')
+img.save('guestcode.png')
