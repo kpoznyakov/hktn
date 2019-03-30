@@ -1,6 +1,15 @@
+import random
 import sys
 import requests
-from pprint import pprint
+# from pprint import pprint
+from time import sleep
+
+
+def check_is_car():
+    while True:
+        sleep(5)
+        return random.choice([0, 1])
+
 
 BASE_URL = 'https://platerecognizer.com/v1/plate-reader'
 
@@ -19,8 +28,9 @@ def plate_recog(file):
             files=dict(upload=fp),
             headers={'Authorization': 'Token 95520c18606dcc83abe1793a712643f6793daace'})
     # pprint(response.json())
-    pprint(response.json()['results'][0]['plate'])
+    print(response.json()['results'][0]['plate'])
 
 
 if __name__ == '__main__':
-    plate_recog('Screenshot 2019-03-30 at 15.36.06.png')
+    if check_is_car():
+        plate_recog('../Screenshot 2019-03-30 at 15.36.06.png')
