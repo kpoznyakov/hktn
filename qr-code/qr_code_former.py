@@ -2,26 +2,53 @@
 """ TODO
 сервис для кодировки ID в qr-code и его занесение в базу
 данных
+поменять usability на данные с сайта
+ID = ID-пользователя/utime/[0/1]-одноразовый/многоразовый
+отправлять .png обратно на сайт
 """
 
 
+from time import time
+from random import randint
+
+import psycopg2
 import qrcode
 
-qr = qrcode.QRCode(
-    version = 1,
-    error_correction = qrcode.constants.ERROR_CORRECT_H,
-    box_size = 10,
-    border = 4,
-)
 
-data = "Hello, duda"
+def data_encoding(user_id, usability):
+    return str(user_id) + str(time()) + str(usability)
+
+
+conn = psycopg2.connect(user='postgres', password='qweasdzxc',
+                        database='entrance', host='100.100.148.215')
+cursor = conn.cursor()
+cursor.execute('SELECT id from entrance.dbo.user')
+user_id = cursor.fetchone()[0]
+cursor.close()
+conn.close()
+
+usability = 1
+data = data_encoding(user_id, usability)
+
+conn = psycopg2.connect(user='postgres', password='qweasdzxc',
+                        database='app', host='100.100.148.215')
+cursor = conn.cursor()
+cursor.execute("SELECT app.dbo.insert_QR('{}', {})".format(data, user_id))
+conn.commit()
+cursor.close()
+conn.close()
+
+qr = qrcode.QRCode(
+    version=1,
+    error_correction=qrcode.constants.ERROR_CORRECT_H,
+    box_size=10,
+    border=4,
+)
 
 qr.add_data(data)
 qr.make(fit=True)
 
 img = qr.make_image()
 
-img.save("image.png")
-# img.save("image.bmp")
-# img.save("image.jpeg")
-# img.save("image.jpg")
+name = str(randint(10000, 99999))
+img.save(name + '.png')
