@@ -1,15 +1,16 @@
 import random
-import sys
 import requests
 import os
-# from pprint import pprint
 from time import sleep
 
 
 def check_is_car():
     while True:
         sleep(3)
-        return random.choice([0, 1])
+        is_car = random.choice([0, 1])
+        if is_car:
+            print('Подъехал автомобиль. Номер:')
+            return is_car
 
 
 BASE_URL = 'https://platerecognizer.com/v1/plate-reader'
@@ -23,13 +24,14 @@ def plate_recog(dir_, file):
             BASE_URL,
             files=dict(upload=fp),
             headers={'Authorization': 'Token 95520c18606dcc83abe1793a712643f6793daace'})
-    print(response.text)
+    # print(response.text)
     try:
         if response.json()['results'] is None:
-            pass
+            print(response.text)
         else:
             print(response.json()['results'][0]['plate'])
     except IndexError:
+        print('Не распознан. Воспользуйтесь пропуском.')
         pass
 
 
