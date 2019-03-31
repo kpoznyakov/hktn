@@ -1,11 +1,14 @@
 # coding = "utf-8"
-""" TODO
-сервис для кодировки ID в qr-code и его занесение в базу
-данных
-поменять usability на данные с сайта
-ID = ID-пользователя/utime/[0/1]-одноразовый/многоразовый
-отправлять .png обратно на сайт
 """
+сервис для кодировки ID в qr-code и его занесение в базу данных
+- ID = ID-пользователя/utime/[0/1]-одноразовый/многоразовый
+:param: ID строка
+:return: qr-code
+"""
+
+# TODO
+# ! поменять usability на данные с сайта
+# * отправлять .png обратно на сайт
 
 from random import randint
 from time import time
@@ -26,7 +29,7 @@ user_id = cursor.fetchone()[0]
 cursor.close()
 conn.close()
 
-usability = 1
+usability = 0
 data = data_encoding(user_id, usability)
 
 conn = psycopg2.connect(user='postgres', password='qweasdzxc',
