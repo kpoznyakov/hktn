@@ -1,7 +1,9 @@
 # coding = "utf-8"
-""" TODO
-сервис для декодировки ID в qr-code и его проверка 
-в базе данных на подлинность
+"""
+декодирование ID в qr-code и его проверка в базе данных на подлинность
+:param: qr-code
+:return: flag
+flag - описывает прошла ли проверка в базе данных - открыть дверь
 """
 
 import psycopg2
@@ -12,5 +14,12 @@ conn = psycopg2.connect(user='postgres', password='qweasdzxc',
                         database='app', host='100.100.148.215')
 cursor = conn.cursor()
 cursor.execute("SELECT app.dbo.check_QR('{}')".format(qr))
-key = cursor.fetchone()
-print(key)
+conn.commit()
+key = cursor.fetchone()[0]
+cursor.close()
+conn.close()
+if key == 1:
+    flag = True
+else:
+    flag = False
+print(flag)
