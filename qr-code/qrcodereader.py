@@ -9,7 +9,7 @@ flag - описывает прошла ли проверка в базе дан�
 import psycopg2
 import qrdecode
 
-qr = qrdecode.decode('guestcode.png')
+qr = qrdecode.decode('no_name.png')
 conn = psycopg2.connect(user='postgres', password='qweasdzxc',
                         database='app', host='100.100.148.215')
 cursor = conn.cursor()
@@ -18,8 +18,8 @@ conn.commit()
 key = cursor.fetchone()[0]
 cursor.close()
 conn.close()
-if key == 1:
-    flag = True
-else:
-    flag = False
-print(flag)
+# if key == 1:
+#     flag = True
+# else:
+#     flag = False
+# print(flag)
