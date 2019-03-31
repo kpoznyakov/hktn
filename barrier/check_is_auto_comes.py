@@ -1,8 +1,38 @@
-import random
-import requests
 import os
+import random
 from time import sleep
-import datetime
+
+import psycopg2
+import requests
+
+params = {
+    'dbname': 'parking',
+    'user': 'postgres',
+    'password': 'qweasdzxc',
+    'host': '100.100.148.215',
+    'port': 5432
+}
+
+
+def search_plate(plate):
+    conn = psycopg2.connect(**params)
+    cur = conn.cursor()
+    cur.execute("SELECT dbo.check_car(%s, %s)", (plate, 1))
+    # print(cur.fetchone())
+    # print('dfdfd')
+    if cur.fetchone()[0] == 1:
+        conn.commit()
+        cur.close()
+        conn.close()
+        return True
+    conn.commit()
+    cur.close()
+    conn.close()
+    return False
+
+
+def log_plate(plate):
+    pass
 
 
 def check_is_car():
@@ -14,37 +44,22 @@ def check_is_car():
             return is_car
 
 
-BASE_URL = 'https://platerecognizer.com/v1/plate-reader'
-
-
 def plate_recog(dir_, file):
-    # print(file)
-    allowed_plates = [
-        's001ss01',
-        'r001am77',
-        'm5550e61'
-    ]
+    base_url = 'https://platerecognizer.com/v1/plate-reader'
     with open(dir_ + file, 'rb') as fp:
         response = requests.post(
-            BASE_URL,
+            base_url,
             files=dict(upload=fp),
             headers={'Authorization': 'Token 95520c18606dcc83abe1793a712643f6793daace'})
-    # print(response.text)
     try:
-        if response.json()['results'] is None:
-            print(response.text)
-            pass
+        res = response.json()['results'][0]['plate']
+        print(res)
+        if search_plate(res):
+            print('Проезжайте!')
         else:
-            res = response.json()['results'][0]['plate']
-            # if (SELECT `status` FROM some WHERE plate = res) is 'Allow':
-            #
-            #
-            print(res)
-            if res in allowed_plates:
-                print('Проезжайте!')
-            else:
-                print('Номер не найден. Обратитесь на пункт охраны или воспользуйтесь картой доступа.')
+            print('Номер не найден. Обратитесь на пункт охраны или воспользуйтесь картой доступа.')
     except IndexError:
+        print(response.text)
         print('Не распознан. Воспользуйтесь пропуском.')
         pass
 
@@ -54,16 +69,16 @@ def select_random_file(dir_):
     for root, dirs, files in os.walk(dir_):
         for file in files:
             plate_files.append(file)
-            # print(plate_files)
         random_img = random.choice(plate_files)
-        # print(random_img)
         return random_img
 
 
 if __name__ == '__main__':
+    # while True:
+    #     search_plate('r001am77')
+    #     sleep(3)
     dir_with_plates = './plates_img/'
-    # print(select_random_file(dir_with_plates))
     while True:
         if check_is_car():
-            l = select_random_file(dir_with_plates)
-            plate_recog(dir_with_plates, l)
+            foo = select_random_file(dir_with_plates)
+            plate_recog(dir_with_plates, foo)
